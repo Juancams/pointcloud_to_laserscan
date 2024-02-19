@@ -10,28 +10,28 @@ def generate_launch_description():
             name='scanner', default_value='scanner',
             description='Namespace for sample topics'
         ),
-        Node(
-            package='pointcloud_to_laserscan', executable='dummy_pointcloud_publisher',
-            remappings=[('cloud', [LaunchConfiguration(variable_name='scanner'), '/cloud'])],
-            parameters=[{'cloud_frame_id': 'cloud', 'cloud_extent': 2.0, 'cloud_size': 500}],
-            name='cloud_publisher'
-        ),
+        # Node(
+        #     package='pointcloud_to_laserscan', executable='dummy_pointcloud_publisher',
+        #     remappings=[('cloud', [LaunchConfiguration(variable_name='scanner'), '/cloud'])],
+        #     parameters=[{'cloud_frame_id': 'cloud', 'cloud_extent': 2.0, 'cloud_size': 500}],
+        #     name='cloud_publisher'
+        # ),
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='static_transform_publisher',
             arguments=[
-                '--x', '0', '--y', '0', '--z', '0',
-                '--qx', '0', '--qy', '0', '--qz', '0', '--qw', '1',
-                '--frame-id', 'map', '--child-frame-id', 'cloud'
+                '--x', '0', '--y', '0', '--z', '0.4',
+                '--roll', '-1.57', '--pitch', '0', '--yaw', '-1.57',
+                '--frame-id', 'base_link', '--child-frame-id', 'openni_rgb_optical_frame'
             ]
         ),
         Node(
             package='pointcloud_to_laserscan', executable='pointcloud_to_laserscan_node',
-            remappings=[('cloud_in', [LaunchConfiguration(variable_name='scanner'), '/cloud']),
-                        ('scan', [LaunchConfiguration(variable_name='scanner'), '/scan'])],
+            remappings=[('cloud_in', '/pointcloud'),
+                        ('scan', [LaunchConfiguration(variable_name='scanner'), '/point_cloud_scan'])],
             parameters=[{
-                'target_frame': 'cloud',
+                'target_frame': 'base_link',
                 'transform_tolerance': 0.01,
                 'min_height': 0.0,
                 'max_height': 1.0,
